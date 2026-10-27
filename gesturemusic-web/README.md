@@ -15,7 +15,7 @@ Open the local Vite URL in a current Chromium browser and allow camera access. T
 
 Version 1 uses fixed-do for one octave: C4 = Do, D4 = Re, through B4 = Ti. Kodály teaching normally uses movable-do; this fixed-do mapping is a deliberate learning simplification. Hand height is not used for recognition yet.
 
-The camera variants are designed for a front-facing webcam: keep the whole hand and wrist visible about 40–70 cm from the camera, around chest or shoulder height, and perform the pose slowly. Do is a loose fist with the back toward the camera. Re is a flat joined-finger hand angled about 45 degrees upward in the image. Mi is the same flat shape level. Fa is a loose fist with thumb down. Sol turns the flat hand onto its edge. La is gently curved with fingertips drooping. Ti points the index finger up while the others curl. These descriptions are the recording convention; confirm them against the teaching reference used in the course.
+The camera variants are designed for a front-facing webcam: keep the whole hand and wrist visible about 40–70 cm from the camera, around chest or shoulder height, and perform the pose slowly. Do is a loose fist with the back toward the camera. Re is a flat joined-finger hand angled about 45 degrees upward in the image. Mi is the same flat shape held level. Fa is a loose fist with thumb down. Sol is upright with the palm facing the signer. La is relaxed and curved with fingertips drooping. Ti points the index finger up while the others curl. These descriptions are the recording convention; confirm them against the teaching reference used in the course.
 
 ## Calibration and dataset
 
@@ -27,8 +27,20 @@ Calibrate includes grouped 5-fold cross-validation and a confusion matrix. Augme
 
 `src/config.js` holds `KNN_K`, `MIN_CONFIDENCE`, `MAX_DISTANCE`, `CONFIRM_FRAMES`, and `HOLD_MS`. k-NN uses distance-weighted Euclidean votes over a 72-value vector: wrist-relative and scale-normalized 3D landmarks, palm normal, five curl ratios, and image-plane hand tilt. It does not rotate-normalize because orientation distinguishes several signs. Low-confidence or too-distant input is rejected as unknown.
 
-The handedness self-check is in Calibrate. Raise the right hand and compare the displayed label; turn **Flip label** on if the label is inverted. The choice is kept in local browser storage.
+The handedness self-check is in Calibrate. Raise the right hand and compare the displayed label; turn **Flip label** on if the label is inverted. The choice is kept in local browser storage. Calibrate can also save a cropped photo of your sign in this browser and optionally switch that card to a dot-only skeleton averaged from recent landmarks.
 
 ## Add a sign
 
-Add its note/sign entry to `src/data/noteSignMap.js`, then add a corresponding illustration branch to `src/components/SignIllustration.jsx`. The classifier and Calibrate choices derive their note labels from the shared map. Keep camera instructions distinct and record samples for the new label before enabling recognition for it.
+Add its note/sign entry to `src/data/noteSignMap.js`, then add its reference image to `public/signs/` and use the matching lowercase solfège filename. The classifier and Calibrate choices derive their note labels from the shared map. Keep camera instructions distinct and record samples for the new label before enabling recognition for it.
+
+## Hand-sign image credit
+
+Traditional sign images are 600 px wide copies from Freya Jarman's Wikimedia Commons set. Each file is dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Credit is included here and in the app footer as a courtesy.
+
+- [Do](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_do.jpg)
+- [Re](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_re.jpg)
+- [Mi](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_mi.jpg)
+- [Fa](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_fa.jpg)
+- [Sol](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_sol.jpg)
+- [La](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_la.jpg)
+- [Ti](https://commons.wikimedia.org/wiki/File:Solfege_hand_sign_ti.jpg)

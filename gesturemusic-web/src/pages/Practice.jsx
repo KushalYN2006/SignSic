@@ -6,7 +6,7 @@ import { usePracticeSession } from '../hooks/usePracticeSession';
 import { useWebcam } from '../components/WebcamPanel';
 import WebcamPanel from '../components/WebcamPanel';
 import HoldRing from '../components/HoldRing';
-import SignIllustration from '../components/SignIllustration';
+import SignPhoto from '../components/SignPhoto';
 
 export default function Practice() {
   const location = useLocation();
@@ -39,7 +39,7 @@ export default function Practice() {
         <div className="target-top"><span className="micro-label">YOUR NOTE</span><span className="target-count">{session.score.attempts + 1} <i>/ ROUND</i></span></div>
         <div className="mode-switch" role="group" aria-label="Practice mode"><button className={session.mode === 'guided' ? 'selected' : ''} onClick={() => session.setMode('guided')}>Guided</button><button className={session.mode === 'challenge' ? 'selected' : ''} onClick={() => session.setMode('challenge')}>Challenge</button></div>
         <HoldRing progress={session.progress} state={session.status}><div className="target-letter">{session.target.note[0]}</div><div className="target-solfege">{session.target.solfege}</div></HoldRing>
-        {session.mode === 'guided' || session.hint ? <div className="target-sign"><SignIllustration item={symbol} compact /></div> : <button className="text-button hint-button" onClick={session.revealHint}>Show hint <small>counts against score</small></button>}
+        {session.mode === 'guided' || session.hint ? <div className="target-sign"><SignPhoto item={symbol} compact /></div> : <button className="text-button hint-button" onClick={session.revealHint}>Show hint <small>counts against score</small></button>}
         <div className="target-actions"><button className="button button--quiet" onClick={session.skip}>Skip <span>→</span></button></div>
       </section>
     </div>

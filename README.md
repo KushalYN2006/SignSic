@@ -105,3 +105,9 @@ only when the bucket changes after a debounce interval.
 `sounddevice`. Each note receives a short attack/release envelope to avoid
 clicks. FM, AM, and duo synthesis are documented in inline comments for viva or
 project-report reference.
+
+## Browser solfège app
+
+The React/Vite learning app lives in [`gesturemusic-web/`](gesturemusic-web/README.md).
+Its traditional hand-sign reference images are by Freya Jarman, CC0 1.0, via
+[Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:Curwen_Hand_Signs).

@@ -14,6 +14,7 @@ export function useHandTracking(enabled = true, flipHandedness = FLIP_HANDEDNESS
   const lastInferAtRef = useRef(0);
   const previousInferAtRef = useRef(0);
   const latestRef = useRef(null);
+  const landmarkHistoryRef = useRef([]);
   const flipRef = useRef(flipHandedness);
   flipRef.current = flipHandedness;
   const [state, setState] = useState({ status: 'idle', error: '', hand: null, fps: 0 });
@@ -27,6 +28,7 @@ export function useHandTracking(enabled = true, flipHandedness = FLIP_HANDEDNESS
     landmarkerRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
     latestRef.current = null;
+    landmarkHistoryRef.current = [];
     setState((current) => ({ ...current, status: 'idle', hand: null }));
   }, []);
 
@@ -83,6 +85,13 @@ export function useHandTracking(enabled = true, flipHandedness = FLIP_HANDEDNESS
         const category = result.handednesses?.[0]?.[0] || result.handedness?.[0]?.[0];
         const handedness = category?.categoryName || category?.displayName || 'Right';
         if (landmarks) {
+          landmarkHistoryRef.current = [...landmarkHistoryRef.current, landmarks.map(({ x, y, z }) => ({ x, y, z }))].slice(-12);
+          const history = landmarkHistoryRef.current;
+          const averageLandmarks = landmarks.map((point, index) => ({
+            x: history.reduce((sum, sample) => sum + sample[index].x, 0) / history.length,
+            y: history.reduce((sum, sample) => sum + sample[index].y, 0) / history.length,
+            z: history.reduce((sum, sample) => sum + sample[index].z, 0) / history.length,
+          }));
           const features = extractFeatures(landmarks, worldLandmarks, handedness, flipRef.current);
           context.fillStyle = '#4fd1c5';
           landmarks.forEach((point) => {
@@ -90,10 +99,11 @@ export function useHandTracking(enabled = true, flipHandedness = FLIP_HANDEDNESS
             context.arc(point.x * width, point.y * height, Math.max(3, width * 0.004), 0, Math.PI * 2);
             context.fill();
           });
-          const hand = { landmarks, worldLandmarks, handedness, features, timestamp: now, confidence: category?.score ?? 0.75 };
+          const hand = { landmarks, averageLandmarks, worldLandmarks, handedness, features, timestamp: now, confidence: category?.score ?? 0.75 };
           latestRef.current = hand;
           setState((current) => ({ ...current, status: 'tracking', hand, fps: elapsed ? Math.round(1000 / elapsed) : 0 }));
         } else {
+          landmarkHistoryRef.current = [];
           latestRef.current = null;
           setState((current) => ({ ...current, status: 'ready', hand: null }));
         }
