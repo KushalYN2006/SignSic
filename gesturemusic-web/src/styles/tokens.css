@@ -1,0 +1,27 @@
+:root {
+  color-scheme: dark;
+  --bg-deep: #06141a;
+  --bg-mid: #0b2a33;
+  --bg-glow: #124a55;
+  --accent-aqua: #4fd1c5;
+  --accent-amber: #f5b942;
+  --accent-coral: #ff7a59;
+  --success: #5eeaa0;
+  --text-primary: #f2fafb;
+  --text-secondary: rgba(242, 250, 251, .68);
+  --glass-edge: rgba(228, 250, 250, .19);
+  --surface: rgba(8, 27, 33, .68);
+  --radius: 22px;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 320px; background: var(--bg-deep); }
+body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--text-primary); background: linear-gradient(145deg, var(--bg-deep), var(--bg-mid) 58%, #09252c); }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { color: inherit; }
+a { color: inherit; text-decoration: none; }
+::selection { background: rgba(79, 209, 197, .36); }

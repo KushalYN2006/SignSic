@@ -1,0 +1,16 @@
+.background-scene { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; background: linear-gradient(145deg, #06141a 0%, #0b2a33 56%, #09252c 100%); }
+.scene-wash { position: absolute; inset: 0; opacity: .32; background: linear-gradient(115deg, transparent 18%, rgba(18,74,85,.17) 52%, transparent 80%); }
+.instrument-ghost { position: absolute; width: clamp(90px, 15vw, 240px); color: rgba(79,209,197,.10); animation: slow-drift 32s ease-in-out infinite alternate; }
+.instrument-ghost svg { display: block; width: 100%; height: auto; overflow: visible; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.instrument-ghost .ink { fill: currentColor; stroke: none; }
+.ghost-1, .ghost-4 { color: rgba(245,185,66,.085); animation-duration: 38s; }
+.ghost-2 { animation-duration: 28s; }
+.ghost-3 { animation-duration: 36s; }
+.music-mark { position: absolute; color: rgba(245,185,66,.13); font-family: Georgia, serif; animation: float-note 23s linear infinite; }
+.mark-one { left: 20%; bottom: -50px; font-size: 80px; }
+.mark-two { left: 62%; bottom: -65px; font-size: 112px; animation-delay: -9s; }
+.mark-three { left: 75%; bottom: -60px; font-size: 90px; animation-delay: -15s; }
+.mark-four { left: 41%; bottom: -50px; font-size: 64px; animation-delay: -4s; }
+@keyframes slow-drift { from { margin-top: -7px; } to { margin-top: 11px; } }
+@keyframes float-note { 0% { transform: translateY(0) rotate(-8deg); opacity: 0; } 15% { opacity: .85; } 85% { opacity: .7; } 100% { transform: translateY(-115vh) rotate(18deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .instrument-ghost, .music-mark { animation: none; } }
