@@ -37,16 +37,16 @@ export function useHandTracking(enabled = true, flipHandedness = FLIP_HANDEDNESS
     setState((current) => ({ ...current, status: 'loading', error: '' }));
     try {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error('This browser cannot access a webcam. Open the app on localhost or HTTPS.');
-      const vision = await FilesetResolver.forVisionTasks('/models/wasm');
+      const vision = await FilesetResolver.forVisionTasks(`${import.meta.env.BASE_URL}models/wasm`);
       try {
         landmarkerRef.current = await HandLandmarker.createFromOptions(vision, {
-          baseOptions: { modelAssetPath: '/models/hand_landmarker.task', delegate: 'GPU' },
+          baseOptions: { modelAssetPath: `${import.meta.env.BASE_URL}models/hand_landmarker.task`, delegate: 'GPU' },
           runningMode: 'VIDEO', numHands: 1,
           minHandDetectionConfidence: 0.55, minHandPresenceConfidence: 0.5, minTrackingConfidence: 0.5,
         });
       } catch {
         landmarkerRef.current = await HandLandmarker.createFromOptions(vision, {
-          baseOptions: { modelAssetPath: '/models/hand_landmarker.task', delegate: 'CPU' },
+          baseOptions: { modelAssetPath: `${import.meta.env.BASE_URL}models/hand_landmarker.task`, delegate: 'CPU' },
           runningMode: 'VIDEO', numHands: 1,
           minHandDetectionConfidence: 0.55, minHandPresenceConfidence: 0.5, minTrackingConfidence: 0.5,
         });

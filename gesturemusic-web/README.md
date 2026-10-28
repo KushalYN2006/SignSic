@@ -11,6 +11,10 @@ pnpm dev
 
 Open the local Vite URL in a current Chromium browser and allow camera access. Tone audio is enabled by the first Play note action or camera-start button. The hand model is stored at `public/models/hand_landmarker.task`; the Vite build copies the installed MediaPipe WASM runtime into `public/models/wasm`, so runtime inference uses local assets after installation.
 
+## Live site
+
+The `main` branch automatically builds and publishes this app to [GitHub Pages](https://kushalyn2006.github.io/SignSic/). The workflow runs when files under `gesturemusic-web/` change. If the first deployment does not start, set the repository's **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
+
 ## Sign convention
 
 Version 1 uses fixed-do for one octave: C4 = Do, D4 = Re, through B4 = Ti. Kodály teaching normally uses movable-do; this fixed-do mapping is a deliberate learning simplification. Hand height is not used for recognition yet.

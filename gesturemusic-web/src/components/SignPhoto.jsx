@@ -3,7 +3,7 @@ export default function SignPhoto({ item, compact = false, className = '' }) {
   return <div className={`sign-photo-frame ${compact ? 'sign-photo-frame--compact' : ''} ${className}`.trim()}>
     <img
       className="sign-photo"
-      src={`/signs/${sign}.jpg`}
+      src={`${import.meta.env.BASE_URL}signs/${sign}.jpg`}
       alt={`${item.solfege} traditional Kodály hand sign`}
       loading="lazy"
       width="600"
