@@ -149,6 +149,10 @@ node_modules/
 .pnpm-store/
 gesturemusic-web/dist/
 
+# The desktop app has a top-level lib/ directory, but these browser modules are source code.
+!gesturemusic-web/src/lib/
+!gesturemusic-web/src/lib/**
+
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
