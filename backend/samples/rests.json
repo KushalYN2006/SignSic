@@ -1,0 +1,50 @@
+[
+  {
+    "id": 0,
+    "note": "C4",
+    "pitch_class": "C",
+    "octave": 4,
+    "midi": 60,
+    "start_s": 0.08,
+    "end_s": 0.44,
+    "duration_s": 0.36,
+    "confidence": 1.0,
+    "is_natural": true
+  },
+  {
+    "id": 1,
+    "note": "E4",
+    "pitch_class": "E",
+    "octave": 4,
+    "midi": 64,
+    "start_s": 0.52,
+    "end_s": 0.88,
+    "duration_s": 0.36,
+    "confidence": 1.0,
+    "is_natural": true
+  },
+  {
+    "id": 2,
+    "note": "G4",
+    "pitch_class": "G",
+    "octave": 4,
+    "midi": 67,
+    "start_s": 0.96,
+    "end_s": 1.32,
+    "duration_s": 0.36,
+    "confidence": 1.0,
+    "is_natural": true
+  },
+  {
+    "id": 3,
+    "note": "C5",
+    "pitch_class": "C",
+    "octave": 5,
+    "midi": 72,
+    "start_s": 1.4,
+    "end_s": 1.76,
+    "duration_s": 0.36,
+    "confidence": 1.0,
+    "is_natural": true
+  }
+]

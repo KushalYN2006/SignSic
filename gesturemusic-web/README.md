@@ -1,6 +1,8 @@
-# GestureMusic · Part 1
+# GestureMusic · Parts 1 and 2
 
 Browser-based Kodály / Curwen solfège learning prototype. The webcam, hand features, and personal sample set stay in the browser. Part 2 can import `src/data/noteSignMap.js`, `src/lib/features.js`, and `src/lib/knnClassifier.js` without UI dependencies.
+
+Part 2 adds an **Analyze** page for uploading a single melodic audio line. Start the FastAPI service using the instructions in [`../backend/README.md`](../backend/README.md), then use Analyze. The frontend sends audio to `VITE_API_BASE_URL` (default `http://127.0.0.1:8000`); analysis is temporary and the backend returns note events only. Run frontend unit tests with `pnpm test --run`.
 
 ## Run locally
 

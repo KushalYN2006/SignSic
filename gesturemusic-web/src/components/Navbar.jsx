@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 
 const links = [
-  ['/', 'Learn'], ['/practice', 'Practice'], ['/reference', 'Reference'], ['/calibrate', 'Calibrate'],
+  ['/', 'Learn'], ['/practice', 'Practice'], ['/analyze', 'Analyze'], ['/reference', 'Reference'], ['/calibrate', 'Calibrate'],
 ];
 
 export default function Navbar() {

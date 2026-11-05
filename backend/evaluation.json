@@ -1,0 +1,65 @@
+[
+  {
+    "sample": "accidentals",
+    "reference_notes": 7,
+    "detected_notes": 9,
+    "precision": 0.778,
+    "recall": 1.0,
+    "f1": 0.875,
+    "tuning_cents": 0.0
+  },
+  {
+    "sample": "ode",
+    "reference_notes": 15,
+    "detected_notes": 17,
+    "precision": 0.882,
+    "recall": 1.0,
+    "f1": 0.938,
+    "tuning_cents": 0.0
+  },
+  {
+    "sample": "repeated",
+    "reference_notes": 6,
+    "detected_notes": 9,
+    "precision": 0.667,
+    "recall": 1.0,
+    "f1": 0.8,
+    "tuning_cents": 0.0
+  },
+  {
+    "sample": "rests",
+    "reference_notes": 4,
+    "detected_notes": 6,
+    "precision": 0.667,
+    "recall": 1.0,
+    "f1": 0.8,
+    "tuning_cents": 0.0
+  },
+  {
+    "sample": "scale",
+    "reference_notes": 15,
+    "detected_notes": 16,
+    "precision": 0.938,
+    "recall": 1.0,
+    "f1": 0.968,
+    "tuning_cents": 0.0
+  },
+  {
+    "sample": "sharp_tuning",
+    "reference_notes": 5,
+    "detected_notes": 6,
+    "precision": 0.833,
+    "recall": 1.0,
+    "f1": 0.909,
+    "tuning_cents": 20.0
+  },
+  {
+    "sample": "twinkle",
+    "reference_notes": 14,
+    "detected_notes": 15,
+    "precision": 0.933,
+    "recall": 1.0,
+    "f1": 0.966,
+    "tuning_cents": 0.0
+  }
+]

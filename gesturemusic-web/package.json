@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --configLoader runner",
     "build": "vite build --configLoader runner",
+    "test": "vitest",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "tone": "^15.1.22"
   },
   "devDependencies": {
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "vitest": "^3.2.7"
   }
 }

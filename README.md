@@ -1,5 +1,13 @@
 # Hand Sign to Musical Note Generator
 
+## GestureMusic web app
+
+The repository also contains the browser-based Kodály learning prototype. Part 2 adds an audio-analysis page and a local FastAPI backend:
+
+- Frontend: [gesturemusic-web](gesturemusic-web/README.md)
+- Backend setup, API, samples, and measured transcription results: [backend](backend/README.md)
+- Live static frontend: [KushalYN2006.github.io/SignSic](https://kushalyn2006.github.io/SignSic/)
+
 Python desktop app that turns webcam hand gestures into musical notes. It is
 inspired by `manipta/Musicment`, but rebuilt as a modular PyQt application with
 a live camera canvas, dot-only hand landmark overlay, per-hand instrument selection,
