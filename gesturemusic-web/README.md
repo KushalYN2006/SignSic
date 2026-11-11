@@ -25,9 +25,27 @@ The camera variants are designed for a front-facing webcam: keep the whole hand 
 
 ## Calibration and dataset
 
-Calibrate each sign under similar lighting and camera position. For a selected sign, press **Record samples** and vary hand distance, position, and small angles while keeping the pose recognizable. Each capture runs for about 10 seconds and targets 150 frames. Small scale, rotation (within ±8 degrees), and feature-noise augmentations are stored with their source sample. Personal data is saved in IndexedDB. Use **Export JSON** for a backup or **Import JSON** to load a dataset. The shipped `public/data/default_samples.json` is intentionally empty until real developer-recorded signs are added; the UI reports that recognition needs training data.
+Recognition works on a first visit using `public/data/default_samples.json`; calibration is optional. The Calibrate page offers three training modes: **Use default samples (recommended)**, **Use my samples**, and **Use both**. The selection is stored under `gm.trainingMode`. In Both mode each personal sample has twice the vote weight of a default sample. Default rows are bundled and read-only; deleting or clearing affects only personal IndexedDB data. If the default file cannot be loaded, existing personal data is selected automatically.
 
-Calibrate includes grouped 5-fold cross-validation and a confusion matrix. Augmented variants from one captured pose remain in the same fold to reduce validation leakage. Treat the score as an estimate for the collected samples, not a promise for unseen lighting or camera conditions. The likely confusions to review are Re/Mi, Mi/La, and Mi/Sol.
+The shipped version 1 dataset has 1,264 rows (632 recorded and 632 augmented), 72 features per row, and the seven labels C, D, E, F, G, A, and B. Optional `featureVersion`, `featureLength`, `createdAt`, and `notes` metadata are supported; files without feature metadata are interpreted as feature version 1 with 72 features. Invalid rows are skipped and counted, while a dataset with most rows invalid is refused. New personal recordings retain rounded raw 21-point world landmarks and handedness, and features are rebuilt from those landmarks when loaded. Existing features-only exports remain supported. If augmentation is omitted from a prepared default file, the app regenerates deterministic variants at load.
+
+The attached source is archived unchanged at `data-source/gesturemusic-samples.json`. Prepare a compact copy without changing that archive:
+
+```powershell
+pnpm run prepare:data -- --round 4
+pnpm run prepare:data -- --round 4 --drop-augmented
+pnpm run prepare:data -- --drop label=C,handedness=Left
+```
+
+The prepare script defaults to reading `data-source/gesturemusic-samples.json` and writing `public/data/default_samples.json`; it refuses to overwrite its input. Audit the shipped file with `pnpm audit:data` (equivalent to `npm run audit:data`). The report includes label, hand, and source counts, per-class centroids and spreads, non-finite feature values, duplicate rows, and warnings for unusual hand clusters, high class spread, or fewer than 60 recorded rows.
+
+**Known dataset issue:** sign C has 60 recorded Left-hand rows and 27 recorded Right-hand rows; every other sign is Right-hand only. The audit measures the C Left/Right centroid separation at about 3.49 in raw Euclidean feature space (RMS distance 0.411; typical within-hand RMS spread is about 0.13). The left-hand cluster may not be in the same mirrored frame as the right-hand cluster. Re-record C with the right hand, or fix handedness mirroring and re-record. The shipped rows are preserved as received; the audit never deletes or edits them.
+
+Each **Record samples** press gets one take ID; its recorded and augmented rows stay together in evaluation. Calibrate evaluates by holding out complete takes. Legacy rows without a take ID are grouped by contiguous label runs and the page labels their results **Legacy data: scores may be optimistic**. If there is only one independent take for a sign, its rows are not used as held-out test data. The score and confusion matrix show which training mode was evaluated. Default recognition thresholds are recommended from leave-one-group-out nearest-neighbor measurements; set numeric `MIN_CONFIDENCE` or `MAX_DISTANCE` in `src/config.js` to override them. The score estimates performance on held-out takes, not a guarantee for new lighting or camera conditions.
+
+### Contribute a profile
+
+To improve the default dataset, record each sign at three camera distances and in two lighting conditions, ideally with three to five different people. Keep each Record press as a separate take and tag rows from the same person with a stable `profile` ID. Re-record both hands consistently when testing handedness mirroring, and run `pnpm audit:data` before shipping a prepared dataset.
 
 ## Recognition settings
 

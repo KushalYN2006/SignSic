@@ -1,3 +1,7 @@
+
+export const FEATURE_VERSION = 1;
+export const FEATURE_LENGTH = 72;
+
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 const subtract = (a, b) => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
 const cross = (a, b) => ({
@@ -28,16 +32,16 @@ export function extractFeatures(landmarks, worldLandmarks, handedness, flipHande
   const tipIds = [4, 8, 12, 16, 20];
   const mcpIds = [2, 5, 9, 13, 17];
   const curl = tipIds.map((tip, index) => distance(normalized[tip], normalized[0]) / (distance(normalized[mcpIds[index]], normalized[0]) || 1));
-  const imageTilt = Math.atan2(landmarks[9].y - landmarks[0].y, landmarks[9].x - landmarks[0].x);
+  const tiltX = (landmarks[9].x - landmarks[0].x) * (shouldMirror ? -1 : 1);
+  const imageTilt = Math.atan2(landmarks[9].y - landmarks[0].y, tiltX);
   const values = [...normalized.flatMap((p) => [p.x, p.y, p.z]), ...palmNormal, ...curl, imageTilt];
   return Float32Array.from(values);
 }
-
-export function augmentFeatures(features, { scale = 0, angle = 0, noise = 0 } = {}) {
+export function augmentFeatures(features, { scale = 0, angle = 0, noise = 0, random = Math.random } = {}) {
   const copy = Float32Array.from(features);
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  const gaussian = () => Math.sqrt(-2 * Math.log(Math.max(Math.random(), 1e-8))) * Math.cos(2 * Math.PI * Math.random());
+  const gaussian = () => Math.sqrt(-2 * Math.log(Math.max(random(), 1e-8))) * Math.cos(2 * Math.PI * random());
   for (let i = 0; i < 21; i += 1) {
     const x = copy[i * 3];
     const y = copy[i * 3 + 1];

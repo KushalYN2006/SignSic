@@ -14,6 +14,11 @@
 .page-heading h1 { margin: 8px 0 0; font-size: 58px; line-height: .98; letter-spacing: 0; font-weight: 780; }
 .page-heading h1 em { color: var(--accent-aqua); font-style: normal; }
 .page-heading > p { max-width: 330px; margin: 0 0 5px; color: var(--text-secondary); font-size: 14px; line-height: 1.65; }
+.learn-heading-meta { display: grid; justify-items: end; gap: 12px; }
+.recognition-chip { width: fit-content; min-height: 34px; padding: 8px 12px; display: inline-flex; align-items: center; gap: 7px; color: var(--text-secondary); font-size: 10px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.recognition-chip:hover { color: var(--text-primary); border-color: rgba(79,209,197,.55); }
+.recognition-chip > span:last-child { color: var(--accent-aqua); }
+.recognition-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-aqua); box-shadow: 0 0 9px rgba(79,209,197,.65); }
 .eyebrow, .micro-label { display: block; color: var(--accent-aqua); font-size: 10px; font-weight: 800; letter-spacing: .14em; }
 .learn-layout { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: 18px; align-items: stretch; }
 .learn-left { display: flex; flex-direction: column; gap: 14px; }
@@ -62,6 +67,7 @@
 .text-button:hover { color: var(--text-primary); }
 .dataset-banner { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; margin: -5px 0 16px; color: var(--text-secondary); font-size: 12px; }
 .dataset-banner a { color: var(--accent-amber); font-weight: 750; }
+.training-data-message { margin: 9px 0 0; padding: 10px 12px; color: var(--text-secondary); font-size: 11px; }
 .practice-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(310px, .75fr); gap: 16px; align-items: stretch; }
 .practice-camera-column { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .webcam-panel { padding: 9px; }
@@ -139,6 +145,17 @@
 .handedness-check p { margin: 6px 0 0; color: var(--text-secondary); font-size: 11px; }
 .handedness-check p b { color: var(--accent-amber); }
 .calibrate-card { padding: 19px; }
+.training-data-card { margin: 0 0 16px; padding: 17px 19px; }
+.training-data-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.training-data-heading h2 { margin: 5px 0 0; font-size: 20px; }
+.training-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 14px; }
+.training-mode { min-height: 61px; padding: 10px 13px; display: grid; grid-template-columns: 16px minmax(0,1fr); align-content: center; align-items: center; column-gap: 9px; cursor: pointer; }
+.training-mode input { grid-row: span 2; margin: 0; accent-color: var(--accent-aqua); }
+.training-mode span { color: var(--text-primary); font-size: 11px; font-weight: 700; line-height: 1.35; }
+.training-mode small { grid-column: 2; margin-top: 3px; color: var(--text-secondary); font-size: 9px; }
+.training-mode.is-active { box-shadow: inset 0 0 0 1px rgba(79,209,197,.42), 0 0 20px rgba(79,209,197,.12); }
+.training-mode:has(input:disabled) { cursor: not-allowed; opacity: .48; }
+.calibrate-layout + .evaluation-section { margin-top: 16px; }
 .calibrate-top, .evaluation-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .calibrate-top h2, .evaluation-heading h2 { margin: 6px 0 0; font-size: 22px; }
 .sample-total { color: var(--accent-aqua); font-size: 23px; font-weight: 800; }
@@ -282,6 +299,7 @@
   .sign-card { min-height: 390px; }
   .reference-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .target-card { min-height: 390px; }
+  .training-modes { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .app-shell { width: calc(100% - 20px); padding-top: 10px; }
@@ -324,4 +342,8 @@
   .sample-count { font-size: 8px; }
   .calibrate-actions { flex-wrap: wrap; }
   .site-footer { align-items: flex-start; flex-direction: column; font-size: 8px; }
+  .learn-heading-meta { justify-items: start; }
+  .recognition-chip { white-space: normal; }
+  .training-data-card { padding: 13px; }
+  .training-data-heading { align-items: flex-start; flex-direction: column; }
 }

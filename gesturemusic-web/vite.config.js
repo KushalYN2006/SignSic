@@ -30,6 +30,9 @@ export default defineConfig(({ mode }) => ({
   // directory crawl there; Vite can transform imported modules on demand.
   optimizeDeps: {
     noDiscovery: true,
-    include: ['react', 'react-dom/client', 'react-router-dom', 'tone', '@mediapipe/tasks-vision'],
+    // JSX development transforms import jsxDEV directly. With discovery off,
+    // explicitly prebundle both JSX runtimes so Vite does not serve React's
+    // CommonJS runtime files as native browser ES modules.
+    include: ['react', 'react/jsx-dev-runtime', 'react/jsx-runtime', 'react-dom/client', 'react-router-dom', 'tone', '@mediapipe/tasks-vision'],
   },
 }));

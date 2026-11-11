@@ -1,7 +1,8 @@
 export const FLIP_HANDEDNESS = false;
 export const KNN_K = 5;
-export const MIN_CONFIDENCE = 0.6;
-export const MAX_DISTANCE = 1.35;
+// Set either value to a number to override the leave-one-take-out recommendation.
+export const MIN_CONFIDENCE = null;
+export const MAX_DISTANCE = null;
 export const CONFIRM_FRAMES = 6;
 export const HOLD_MS = 600;
 export const RECORD_DURATION_MS = 10_000;

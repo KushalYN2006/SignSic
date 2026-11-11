@@ -7,6 +7,8 @@
     "dev": "vite --host 127.0.0.1 --configLoader runner",
     "build": "vite build --configLoader runner",
     "test": "vitest",
+    "audit:data": "node scripts/audit_dataset.mjs public/data/default_samples.json",
+    "prepare:data": "node scripts/prepare_default_samples.mjs",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {

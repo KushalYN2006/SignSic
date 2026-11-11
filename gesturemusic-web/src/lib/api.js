@@ -7,7 +7,7 @@ export const ERROR_MESSAGES = {
   AUDIO_UNREADABLE: 'The audio could not be decoded. Check the file and try again.',
   NO_NOTES_FOUND: 'No stable notes were detected. Try a clearer recording.',
   ANALYSIS_TIMEOUT: 'Analysis took too long. Try a shorter recording.',
-  ENGINE_UNAVAILABLE: 'That analysis engine is not available.',
+  ENGINE_UNAVAILABLE: 'The pitch-analysis engine could not start. Check the backend environment and restart the FastAPI server.',
 };
 
 export async function analyzeAudio(file, options = {}, signal) {

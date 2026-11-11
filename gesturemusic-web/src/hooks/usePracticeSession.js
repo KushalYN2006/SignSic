@@ -25,6 +25,8 @@ export function usePracticeSession(classifier, hasDataset, initialTarget, availa
   const advanceTimer = useRef(0);
   const sessionEpoch = useRef(0);
   const hintUsed = useRef(false);
+  const unrecognizedSince = useRef(null);
+  const [needsCalibration, setNeedsCalibration] = useState(false);
 
   const next = useCallback(() => {
     window.clearTimeout(advanceTimer.current);
@@ -58,17 +60,23 @@ export function usePracticeSession(classifier, hasDataset, initialTarget, availa
   const processHand = useCallback((hand) => {
     if (!hasDataset) { setStatus('waiting'); setFeedback('Calibrate signs or import a dataset to enable recognition.'); return; }
     if (!hand?.features) {
+      unrecognizedSince.current = null;
+      setNeedsCalibration(false);
       seenRef.current = { note: '', frames: 0, holdStart: 0, scored: false };
       setStatus('waiting'); setProgress(0); setFeedback('Show your whole hand in the camera.');
       return;
     }
     const prediction = classifier.classify(hand.features);
     if (!prediction) {
+      if (unrecognizedSince.current === null) unrecognizedSince.current = hand.timestamp;
+      setNeedsCalibration(hand.timestamp - unrecognizedSince.current >= 5000);
       seenRef.current = { note: '', frames: 0, holdStart: 0, scored: false };
       setStatus('detecting'); setProgress(0);
       setFeedback(hand.confidence < 0.5 ? 'Try brighter light and keep your wrist in frame.' : 'Sign not recognized yet. Hold a clear shape.');
       return;
     }
+    unrecognizedSince.current = null;
+    setNeedsCalibration(false);
     const previous = seenRef.current;
     if (previous.note !== prediction.note) {
       seenRef.current = { note: prediction.note, frames: 1, holdStart: 0, scored: false };
@@ -105,5 +113,5 @@ export function usePracticeSession(classifier, hasDataset, initialTarget, availa
 
   useEffect(() => () => { sessionEpoch.current += 1; window.clearTimeout(advanceTimer.current); }, []);
   const resetScore = () => { setScore({ correct: 0, attempts: 0, streak: 0, best: 0 }); setNoteStates({}); };
-  return { target, mode, setMode, hint, setHint, revealHint, status, feedback, progress, score, noteStates, processHand, skip, resetScore, accuracy: score.attempts ? Math.round((score.correct / score.attempts) * 100) : 0 };
+  return { target, mode, setMode, hint, setHint, revealHint, status, feedback, progress, score, noteStates, processHand, skip, resetScore, needsCalibration, accuracy: score.attempts ? Math.round((score.correct / score.attempts) * 100) : 0 };
 }

@@ -7,22 +7,23 @@ import { useWebcam } from '../components/WebcamPanel';
 import WebcamPanel from '../components/WebcamPanel';
 import HoldRing from '../components/HoldRing';
 import SignPhoto from '../components/SignPhoto';
+import RecognitionChip from '../components/RecognitionChip';
 
 export default function Practice() {
   const location = useLocation();
   const dataset = useDataset();
   const trainedLabels = useMemo(() => [...new Set(dataset.samples.map((sample) => sample.label))], [dataset.samples]);
-  const session = usePracticeSession(dataset.classifier, dataset.hasDataset, location.state?.target, trainedLabels);
-  const tracker = useWebcam(true);
+  const session = usePracticeSession(dataset.classifier, dataset.loaded && dataset.hasDataset, location.state?.target, trainedLabels);
+  const tracker = useWebcam(dataset.loaded && dataset.hasDataset);
   const [showRaw, setShowRaw] = useState(false);
   const previousHand = useRef(null);
   const requestedAutoStart = useRef(false);
   useEffect(() => {
-    if (location.state?.target && !requestedAutoStart.current) {
+    if (location.state?.target && dataset.loaded && dataset.hasDataset && !requestedAutoStart.current) {
       requestedAutoStart.current = true;
       void tracker.start();
     }
-  }, [location.state, tracker.start]);
+  }, [location.state, dataset.loaded, dataset.hasDataset, tracker.start]);
   useEffect(() => {
     if (tracker.hand !== previousHand.current) {
       previousHand.current = tracker.hand;
@@ -31,10 +32,11 @@ export default function Practice() {
   }, [tracker.hand, session.processHand]);
   const symbol = NOTE_SIGN_MAP.find((item) => item.note[0] === session.target.note[0]);
   return <main className="page page-practice">
-    <div className="page-heading page-heading--compact"><div><span className="eyebrow">LIVE SESSION</span><h1>Practice</h1></div><div className="score-strip"><div><strong>{session.score.correct}</strong><small>correct</small></div><div><strong>{session.accuracy}%</strong><small>accuracy</small></div><div><strong>{session.score.streak}</strong><small>streak</small></div><button className="text-button" onClick={session.resetScore}>Reset</button></div></div>
-    {(!dataset.hasDataset || trainedLabels.length < NOTE_SIGN_MAP.length) && <div className="dataset-banner glass"><span>{dataset.hasDataset ? `Training covers ${trainedLabels.length} of 7 signs. Practice targets use trained signs only.` : 'Recognition needs training samples.'}</span><Link to="/calibrate">Open Calibrate <span>↗</span></Link></div>}
+    <div className="page-heading page-heading--compact"><div><span className="eyebrow">LIVE SESSION</span><h1>Practice</h1><RecognitionChip mode={dataset.mode} loaded={dataset.loaded} /></div><div className="score-strip"><div><strong>{session.score.correct}</strong><small>correct</small></div><div><strong>{session.accuracy}%</strong><small>accuracy</small></div><div><strong>{session.score.streak}</strong><small>streak</small></div><button className="text-button" onClick={session.resetScore}>Reset</button></div></div>
+    {!dataset.loaded && <div className="training-data-message glass" role="status">Loading recognition data…</div>}
+    {dataset.loaded && !dataset.hasDataset && <div className="dataset-banner glass" role="alert"><span>{dataset.error || 'No recognition dataset is available. Record your own samples in Calibrate to enable recognition.'}</span><Link to="/calibrate">Open Calibrate <span>↗</span></Link></div>}
     <div className="practice-layout">
-      <div className="practice-camera-column"><WebcamPanel tracker={tracker} showRaw={showRaw} onToggleRaw={setShowRaw} /><div className="feedback-bar glass" data-state={session.status}><span className="feedback-dot"/><span>{session.feedback}</span><span className="fps-label">{session.status.toUpperCase()}</span></div></div>
+      <div className="practice-camera-column"><WebcamPanel tracker={tracker} showRaw={showRaw} onToggleRaw={setShowRaw} canStart={dataset.loaded && dataset.hasDataset} /><div className="feedback-bar glass" data-state={session.status}><span className="feedback-dot"/><span>{dataset.loaded ? session.feedback : 'Loading recognition data…'}</span><span className="fps-label">{session.status.toUpperCase()}</span></div>{session.needsCalibration && <div className="calibration-hint glass">Not recognized well? <Link to="/calibrate">Calibrate for your own hands <span aria-hidden="true">↗</span></Link></div>}</div>
       <section className={`glass target-card target-card--${session.status}`}>
         <div className="target-top"><span className="micro-label">YOUR NOTE</span><span className="target-count">{session.score.attempts + 1} <i>/ ROUND</i></span></div>
         <div className="mode-switch" role="group" aria-label="Practice mode"><button className={session.mode === 'guided' ? 'selected' : ''} onClick={() => session.setMode('guided')}>Guided</button><button className={session.mode === 'challenge' ? 'selected' : ''} onClick={() => session.setMode('challenge')}>Challenge</button></div>

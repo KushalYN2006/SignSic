@@ -80,7 +80,8 @@ async def health():
 
 @router.post("/analyze", response_model=AnalysisResponse,
              responses={413: {"model": ErrorResponse}, 415: {"model": ErrorResponse},
-                        422: {"model": ErrorResponse}, 504: {"model": ErrorResponse}})
+                        422: {"model": ErrorResponse}, 503: {"model": ErrorResponse},
+                        504: {"model": ErrorResponse}})
 async def analyze(file: UploadFile = File(...), engine: str = Form("pyin"), transpose: int = Form(0),
                   auto_transpose: bool = Form(False)):
     suffix = Path(file.filename or "").suffix.lower()
@@ -106,6 +107,9 @@ async def analyze(file: UploadFile = File(...), engine: str = Form("pyin"), tran
         except AudioLoadError as exc:
             code = "AUDIO_TOO_LONG" if "60 second" in str(exc) else "AUDIO_UNREADABLE"
             raise error(422, code, str(exc)) from exc
+        except ImportError as exc:
+            logger.exception("analysis_engine_import_failed")
+            raise error(503, "ENGINE_UNAVAILABLE", "The pitch-analysis engine could not load in this Python environment. Check the backend startup logs and use an approved Python environment.") from exc
         result["meta"]["processing_ms"] = round((time.perf_counter() - start) * 1000)
         logger.info("analysis_complete bytes=%d duration_s=%.3f processing_ms=%d", len(content), result["meta"]["duration_s"], result["meta"]["processing_ms"])
         return result

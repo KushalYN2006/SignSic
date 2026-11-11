@@ -8,7 +8,7 @@ import NoteKey from '../components/NoteKey';
 import ConfusionMatrix from '../components/ConfusionMatrix';
 import { augmentFeatures } from '../lib/features';
 import { evaluateSamples } from '../lib/evaluate';
-import { exportSamples, importSamples, loadReferenceImage, saveReferenceImage } from '../lib/datasetStore';
+import { exportSamples, importSamples, loadReferenceImage, removePersonalSamples, saveReferenceImage } from '../lib/datasetStore';
 import { useDataset } from '../hooks/useDataset';
 
 function captureCroppedReference(video, landmarks) {
@@ -53,6 +53,14 @@ function captureCroppedReference(video, landmarks) {
   return { photo, skeleton: dots.toDataURL('image/png'), capturedAt: new Date().toISOString() };
 }
 
+function roundedLandmarks(points) {
+  return points?.map(({ x, y, z = 0 }) => ({
+    x: Number(x.toFixed(4)),
+    y: Number(y.toFixed(4)),
+    z: Number(z.toFixed(4)),
+  })) || null;
+}
+
 export default function Calibrate() {
   const dataset = useDataset();
   const [selected, setSelected] = useState(NOTE_SIGN_MAP[0]);
@@ -69,8 +77,10 @@ export default function Calibrate() {
   const recordingStart = useRef(0);
   const captureCount = useRef(0);
   const sampleBuffer = useRef([]);
+  const currentTake = useRef('');
   const classSamples = useMemo(() => Object.fromEntries(NOTE_SIGN_MAP.map((item) => [item.note[0], dataset.samples.filter((sample) => sample.label === item.note[0]).length])), [dataset.samples]);
   const evaluation = useMemo(() => evaluateSamples(dataset.samples), [dataset.samples]);
+  const datasetName = dataset.mode === 'default' ? 'Default samples' : dataset.mode === 'mine' ? 'My samples' : 'Default + mine';
 
   useEffect(() => () => window.clearInterval(timerRef.current), []);
   useEffect(() => {
@@ -100,6 +110,7 @@ export default function Calibrate() {
   const startRecording = () => {
     if (!tracker.latestRef.current?.features) { setMessage('Start the camera and show a clear hand sign first.'); return; }
     setCaptured(0); captureCount.current = 0;
+    currentTake.current = crypto.randomUUID();
     sampleBuffer.current = [...dataset.personal];
     setProgress(0); setRecording(true); setMessage('Recording samples. Vary distance and small angles while holding the selected sign.');
     recordingStart.current = performance.now();
@@ -108,8 +119,8 @@ export default function Calibrate() {
       const hand = tracker.latestRef.current;
       if (hand?.features && captureCount.current < RECORD_SAMPLE_COUNT) {
         const group = crypto.randomUUID();
-        sampleBuffer.current.push({ label: selected.note[0], group, features: Float32Array.from(hand.features), source: 'personal', handedness: hand.handedness });
-        sampleBuffer.current.push({ label: selected.note[0], group, features: augmentFeatures(hand.features, { scale: (Math.random() - 0.5) * 0.04, angle: (Math.random() * 2 - 1) * (8 * Math.PI / 180), noise: 0.01 }), source: 'augmented', handedness: hand.handedness });
+        sampleBuffer.current.push({ label: selected.note[0], take: currentTake.current, group, features: Float32Array.from(hand.features), landmarks: roundedLandmarks(hand.landmarks), worldLandmarks: roundedLandmarks(hand.worldLandmarks), flipHandedness: flip, source: 'personal', handedness: hand.handedness });
+        sampleBuffer.current.push({ label: selected.note[0], take: currentTake.current, group, features: augmentFeatures(hand.features, { scale: (Math.random() - 0.5) * 0.04, angle: (Math.random() * 2 - 1) * (8 * Math.PI / 180), noise: 0.01 }), source: 'augmented', handedness: hand.handedness });
         captureCount.current += 1;
         if (captureCount.current % 5 === 0 || captureCount.current === RECORD_SAMPLE_COUNT) setCaptured(captureCount.current);
       }
@@ -125,7 +136,7 @@ export default function Calibrate() {
   };
 
   const deleteSign = async () => {
-    await dataset.replacePersonal(dataset.personal.filter((sample) => sample.label !== selected.note[0]));
+    await dataset.replacePersonal(removePersonalSamples(dataset.personal, selected.note[0]));
     setMessage(`${selected.solfege} samples deleted.`);
   };
   const clearAll = async () => {
@@ -144,8 +155,25 @@ export default function Calibrate() {
   };
   const toggleFlip = (value) => { setFlip(value); localStorage.setItem('gesturemusic.flipHandedness', String(value)); };
 
+  const trainingModes = [
+    { id: 'default', label: 'Use default samples (recommended)', count: dataset.defaultCount },
+    { id: 'mine', label: 'Use my samples', count: dataset.personalCount, disabled: dataset.personalCount === 0 },
+    { id: 'both', label: 'Use both', count: dataset.defaultCount + dataset.personalCount, disabled: dataset.personalCount === 0 },
+  ];
+
   return <main className="page page-calibrate">
     <div className="page-heading"><div><span className="eyebrow">PERSONALIZE RECOGNITION</span><h1>Calibrate</h1></div><p>Record your camera-friendly signs. Samples stay in this browser.</p></div>
+    <section className="training-data-card glass">
+      <div className="training-data-heading"><div><span className="eyebrow">RECOGNITION DATA</span><h2>Training data</h2></div><button className="text-button" onClick={() => dataset.changeMode('default')}>Reset to default samples</button></div>
+      <div className="training-modes" role="radiogroup" aria-label="Recognition training data">
+        {trainingModes.map((item) => <label key={item.id} className={`training-mode glass glass--pill ${dataset.mode === item.id ? 'glass--strong is-active' : ''}`} title={item.disabled ? 'Record your own samples in Calibrate first' : undefined}>
+          <input type="radio" name="trainingMode" value={item.id} checked={dataset.mode === item.id} disabled={item.disabled} onChange={() => dataset.changeMode(item.id)} />
+          <span>{item.label}</span><small>{item.count.toLocaleString()} samples</small>
+        </label>)}
+      </div>
+      {!dataset.loaded && <p className="training-data-message" role="status">Loading recognition data…</p>}
+      {dataset.loaded && !dataset.defaultCount && !dataset.personalCount && <div className="dataset-banner glass" role="alert"><span>{dataset.error || 'No recognition dataset is available yet.'} Record your own samples in Calibrate to enable recognition.</span></div>}
+    </section>
     <div className="calibrate-layout">
       <div className="calibrate-camera"><WebcamPanel tracker={tracker} showRaw={showRaw} onToggleRaw={setShowRaw} /><div className="handedness-check glass"><div><span className="micro-label">HANDEDNESS SELF-CHECK</span><p>Raise your RIGHT hand: detected label is <b>{tracker.hand?.handedness || '—'}</b></p></div><label className="toggle-label"><input type="checkbox" checked={flip} onChange={(e) => toggleFlip(e.target.checked)} /><span>Flip label</span></label></div></div>
       <section className="glass calibrate-card">
@@ -163,6 +191,6 @@ export default function Calibrate() {
         <div className="dataset-actions"><button className="text-button" onClick={() => exportSamples(dataset.personal)}>Export JSON ↓</button><label className="text-button import-button">Import JSON ↑<input type="file" accept="application/json,.json" onChange={handleImport} /></label><button className="text-button text-danger" onClick={clearAll}>Clear personal samples</button></div>
       </section>
     </div>
-    <section className="evaluation-section glass"><div className="evaluation-heading"><div><span className="eyebrow">MODEL CHECK</span><h2>5-fold evaluation</h2><p className="coverage-line">Sign coverage: {evaluation.covered} / 7</p></div><div className="accuracy-score">{evaluation.accuracy === null ? '—' : `${Math.round(evaluation.accuracy * 100)}%`}<small>{evaluation.total ? `${evaluation.correct} / ${evaluation.total} correct` : 'not enough samples yet'}</small></div></div><ConfusionMatrix result={evaluation} /><p className="evaluation-note">Cross-validation uses samples recorded in this browser and the bundled dataset. This score estimates performance on the collected samples; it is not a guarantee for new lighting or camera conditions.</p></section>
+    <section className="evaluation-section glass"><div className="evaluation-heading"><div><span className="eyebrow">MODEL CHECK</span><h2>Take-held-out evaluation</h2><p className="coverage-line">Dataset: {datasetName} · Sign coverage: {evaluation.covered} / 7</p></div><div className="accuracy-score">{evaluation.accuracy === null ? '—' : `${Math.round(evaluation.accuracy * 100)}%`}<small>{evaluation.total ? `${evaluation.correct} / ${evaluation.total} correct` : 'need at least two takes per sign'}</small></div></div><ConfusionMatrix result={evaluation} /><p className="evaluation-note">Evaluation holds out complete recording takes. It estimates performance on unseen takes and is not a guarantee for new lighting or camera conditions.{evaluation.legacy && ' Legacy data: scores may be optimistic because take IDs were not saved.'}</p></section>
   </main>;
 }

@@ -4,13 +4,17 @@ import { NOTE_SIGN_MAP } from '../data/noteSignMap';
 import { playNote } from '../lib/audio';
 import NoteKey from '../components/NoteKey';
 import SignPhoto from '../components/SignPhoto';
+import RecognitionChip from '../components/RecognitionChip';
+import { useDataset } from '../hooks/useDataset';
 
 export default function Learn() {
+  const dataset = useDataset();
   const [index, setIndex] = useState(0);
   const item = NOTE_SIGN_MAP[index];
   const change = (amount) => setIndex((value) => (value + amount + NOTE_SIGN_MAP.length) % NOTE_SIGN_MAP.length);
   return <main className="page page-learn">
-    <div className="page-heading"><div><span className="eyebrow">SOLFÈGE, MADE VISIBLE</span><h1>Learn a sign.<br /><em>Hear the note.</em></h1></div><p>Seven fixed-do notes, paired with camera-friendly Kodály hand signs.</p></div>
+    <div className="page-heading"><div><span className="eyebrow">SOLFÈGE, MADE VISIBLE</span><h1>Learn a sign.<br /><em>Hear the note.</em></h1></div><div className="learn-heading-meta"><p>Seven fixed-do notes, paired with camera-friendly Kodály hand signs.</p><RecognitionChip mode={dataset.mode} loaded={dataset.loaded} /></div></div>
+    {!dataset.loaded && <div className="training-data-message glass" role="status">Loading recognition data…</div>}
     <div className="learn-layout">
       <div className="learn-left">
         <div className="note-keys" aria-label="Choose a note">{NOTE_SIGN_MAP.map((note, i) => <NoteKey key={note.note} item={note} active={i === index} onClick={() => setIndex(i)} />)}</div>

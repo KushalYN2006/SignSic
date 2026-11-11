@@ -39,7 +39,17 @@ export function usePlayback(notes = [], duration = 0, audioUrl = '') {
     frameRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameRef.current);
   }, [mode]);
-  useEffect(() => { pause(); stopPart(); setTime(0); return () => { audioRef.current?.pause(); stopPart(); synthRef.current?.dispose(); }; }, [audioUrl]);
+  useEffect(() => {
+    pause();
+    stopPart();
+    setTime(0);
+  }, [audioUrl, pause, stopPart]);
+  useEffect(() => () => {
+    audioRef.current?.pause();
+    stopPart();
+    synthRef.current?.dispose();
+    synthRef.current = null;
+  }, [stopPart]);
   useEffect(() => { if (!playing || mode === 'detected') return; const onEnd = () => setPlaying(false); const el = audioRef.current; el?.addEventListener('ended', onEnd); return () => el?.removeEventListener('ended', onEnd); }, [playing, mode]);
   const changeMode = useCallback(next => { if (next !== mode) { pause(); stopPart(); setMode(next); } }, [mode, pause, stopPart]);
   return { audioRef, audioUrl, currentIndex, time, playing, speed, setSpeed, mode, setMode: changeMode, play, pause, seek };
